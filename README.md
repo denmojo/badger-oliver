@@ -48,12 +48,11 @@ Select gives no on-screen feedback beyond the fix time changing. The tracker its
 
 The app fetches [Oliver's public PredictWind tracker](https://www.predictwind.com/tracking/SY_Phoenix) every 15 minutes. If that fails, it retries after a minute. The page is about 2.6 MB, far too big for the badge to parse, but the voyage sits at the very end. An HTTP range request asks for only the last 60 KB. The latest reading and the wake are saved to `/state/oliver.json`, which keeps the map working without a network.
 
-Coastlines come from the stock ISS app. That app has to stay installed.
+Coastlines come from the world map that ships with the badge firmware.
 
 ## Requirements
 
 - A GitHub Universe 2026 badge running the stock firmware. This is a custom derivative of Pimoroni's Tufty 2350 with an RP2350 and a 320x240 color LCD. Over USB it identifies itself as a Tufty 2350.
-- The stock `iss` app, for `/system/apps/iss/world.geo.json`
 - Wi-Fi with internet access
 - A USB data cable
 
@@ -72,7 +71,7 @@ cd badger-oliver
 
 ### 1. Set your Wi-Fi
 
-The simplest way is the badge's own **Settings** app. Otherwise, enter disk mode as described below and edit `secrets.py` at the top of the `BADGER` volume:
+The simplest way is the badge's own **Settings** app. Otherwise, press RESET twice to enter disk mode and edit `secrets.py` at the top of the `BADGER` volume:
 
 ```python
 WIFI_SSID = "your-network"
@@ -81,11 +80,27 @@ WIFI_PASSWORD = "your-password"
 
 Keep the other lines as they are. If `REGION` is wrong for your country, change that too. The file lives only on your badge. Never commit a copy with your password in it; this repo ignores `secrets.py` in case you make one.
 
-### 2. Copy the app with disk mode
+### 2. Add the app from the App Store page
+
+The [badge App Store](https://badger.github.io/apps) can install a folder from your computer. It needs a current version of Chrome or Edge.
+
+1. Connect the badge with a USB-C data cable.
+2. Quickly press RESET twice on the back of the badge. A drive called `BADGER` appears.
+3. On the App Store page, select **Open BADGER disk**. In this first dialog, choose the `BADGER` drive, not the `oliver` folder and not the drive's `apps` folder. Allow the browser to read and write its files.
+4. Under **Add local app**, select **Choose an app folder**. In this second dialog, choose the `oliver` folder you cloned.
+5. Select **Save** and wait for it to finish.
+6. Select **Eject** on the page, then eject the drive in your file manager.
+7. Press RESET once to return to the menu.
+
+Choosing the wrong folder in step 3 gives the error "A requested file or directory could not be found."
+
+To update an installed copy, delete `apps/oliver` from the `BADGER` drive first. The page won't replace an app that's already on the badge, and it can't remove one that isn't in its catalog.
+
+### Alternative: copy the folder yourself
 
 This is the route [documented by the badge project](https://github.com/badger/home/blob/main/hardware/USB_SERIAL.md):
 
-1. Connect the badge and open the **Mass Storage** app. A volume called `BADGER` appears.
+1. Connect the badge and quickly press RESET twice. A volume called `BADGER` appears.
 2. Copy the `oliver` folder into `apps/` on that volume.
 3. Eject the volume and reset the badge.
 

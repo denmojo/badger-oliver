@@ -45,7 +45,7 @@ TRACKER = "https://www.predictwind.com/tracking/SY_Phoenix"
 TAIL_BYTES = 60000          # about 100 bytes a fix: two weeks of them
 VOYAGE_START = 1790899200   # 2026-10-02T00:00Z, the day he left Port Townsend
 SAVED = "/state/oliver.json"
-COASTLINES = "/system/apps/iss/world.geo.json"
+COASTLINES = "/system/assets/world.geo.json"
 
 FETCH_EVERY = 900_000       # the tracker reports about hourly
 RETRY_AFTER = 60_000
@@ -389,7 +389,9 @@ outlines = [shape.custom([vec2(*base(lon, lat)) for lon, lat in ring])
             for ring in load_land()]
 
 
-while True:
+def update():
+  global zoom, next_fetch
+
   if badge.pressed(BUTTON_LEFT):
     zoom = ZOOM_MIN
   if badge.pressed(BUTTON_RIGHT):
@@ -413,4 +415,6 @@ while True:
   draw_wake(center)
   draw_boat(center)
   draw_band()
-  badge.update()
+
+
+run(update)
